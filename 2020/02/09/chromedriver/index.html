@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ch">
     <!-- title -->
 
 
@@ -13,16 +13,16 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" >
-    <meta name="author" content="John Doe">
+    <meta name="author" content="Vince Wen">
     <meta name="renderer" content="webkit">
-    <meta name="copyright" content="John Doe">
+    <meta name="copyright" content="Vince Wen">
     
     <meta name="keywords" content="hexo,hexo-theme,hexo-blog">
     
     <meta name="description" content="">
     <meta http-equiv="Cache-control" content="no-cache">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
-    <title>apply new theme · fi3ework&#39;s Studio</title>
+    <title>如何在python中手动启动chromederiver · fi3ework&#39;s Studio</title>
     <style type="text/css">
     @font-face {
         font-family: 'Oswald-Regular';
@@ -217,7 +217,7 @@
                 <a href="/" >KnowYourself</a>
             </div>
             <div class="post-title">
-                <a href="#" class="post-name">apply new theme</a>
+                <a href="#" class="post-name">如何在python中手动启动chromederiver</a>
             </div>
     </div>
     
@@ -232,7 +232,7 @@
 
 
 
-height:50vh;
+height:60vh;
 ">
     
     <!-- 主页  -->
@@ -247,7 +247,7 @@ height:50vh;
         <h1 class="intro-title">
             <!-- 主页  -->
             
-            apply new theme
+            如何在python中手动启动chromederiver
             <!-- 404 -->
             
         </h1>
@@ -264,14 +264,22 @@ height:50vh;
             <div class="post-intros">
                 <!-- 文章页标签  -->
                 
+                    <div class= post-intro-tags >
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags = "测试">测试</a>
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags = "selenium">selenium</a>
+    
+</div>
+                
                 
                     <div class="post-intro-read">
-                        <span>Word count: <span class="post-count word-count">0</span>Reading time: <span class="post-count reading-time">1 min</span></span>
+                        <span>字数统计: <span class="post-count word-count">222</span>阅读时长: <span class="post-count reading-time">1 min</span></span>
                     </div>
                 
                 <div class="post-intro-meta">
                     <span class="post-intro-calander iconfont-archer">&#xe676;</span>
-                    <span class="post-intro-time">2020/02/08</span>
+                    <span class="post-intro-time">2020/02/09</span>
                     
                     <span id="busuanzi_container_page_pv" class="busuanzi-pv">
                         <span class="iconfont-archer">&#xe602;</span>
@@ -395,15 +403,17 @@ height:50vh;
         <div class="container container-unloaded">
             <main class="main post-page">
     <article class="article-entry">
-        
+        <h2 id="如何在python中手动启动chromederiver"><a href="#如何在python中手动启动chromederiver" class="headerlink" title="如何在python中手动启动chromederiver"></a>如何在python中手动启动chromederiver</h2><h4 id="启动chrmedriver"><a href="#启动chrmedriver" class="headerlink" title="启动chrmedriver"></a>启动chrmedriver</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">import subprocess</span><br><span class="line">import os</span><br><span class="line">import platform</span><br><span class="line"></span><br><span class="line">cmd &#x3D; [&#39;chromedriver&#39;, &#39;--port&#x3D;54824&#39;]</span><br><span class="line">subprocess.Popen(cmd, env&#x3D;os.environ,</span><br><span class="line">                 close_fds&#x3D;platform.system() !&#x3D; &#39;Windows&#39;,</span><br><span class="line">                 stdout&#x3D;self.log_file,</span><br><span class="line">                 stderr&#x3D;self.log_file,</span><br><span class="line">                 stdin&#x3D;PIPE)</span><br></pre></td></tr></table></figure>
+
+<h4 id="from-selenium-webdriver-remote-remote-connection-import-RemoteConnection-line-397"><a href="#from-selenium-webdriver-remote-remote-connection-import-RemoteConnection-line-397" class="headerlink" title="from selenium.webdriver.remote.remote_connection import RemoteConnection line 397"></a>from selenium.webdriver.remote.remote_connection import RemoteConnection line 397</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">self._conn &#x3D; urllib3.PoolManager(timeout&#x3D;self._timeout)</span><br><span class="line">method &#x3D; &#39;POST&#39;</span><br><span class="line">url &#x3D; &#39;http:&#x2F;&#x2F;127.0.0.1:54824&#x2F;session&#39;</span><br><span class="line">body &#x3D; &#39;&#123;&quot;capabilities&quot;: &#123;&quot;firstMatch&quot;: [&#123;&#125;], &quot;alwaysMatch&quot;: &#123;&quot;browserName&quot;: &quot;chrome&quot;, &quot;platformName&quot;: &quot;any&quot;, &quot;goog:chromeOptions&quot;: &#123;&quot;args&quot;: [], &quot;extensions&quot;: []&#125;&#125;&#125;, &quot;desiredCapabilities&quot;: &#123;&quot;version&quot;: &quot;&quot;, &quot;browserName&quot;: &quot;chrome&quot;, &quot;platform&quot;: &quot;ANY&quot;, &quot;goog:chromeOptions&quot;: &#123;&quot;args&quot;: [], &quot;extensions&quot;: []&#125;&#125;&#125;&#39;</span><br><span class="line">headers &#x3D; &#123;</span><br><span class="line">    &#39;Accept&#39;: &#39;application&#x2F;json&#39;,</span><br><span class="line">    &#39;Connection&#39;: &#39;keep-alive&#39;,</span><br><span class="line">    &#39;Content-Type&#39;: &#39;application&#x2F;json;charset&#x3D;UTF-8&#39;,</span><br><span class="line">    &#39;User-Agent&#39;: &#39;selenium&#x2F;3.141.0 (python windows)&#39;</span><br><span class="line">&#125;</span><br><span class="line">resp &#x3D; self._conn.request(method, url, body&#x3D;body, headers&#x3D;headers)</span><br></pre></td></tr></table></figure>
     </article>
     <!-- license  -->
     
-        <div class="license-wrapper">
-            <p>Author：<a href="http://yoursite.com">John Doe</a>
-            <p>原文链接：<a href="http://yoursite.com/2020/02/08/apply-new-theme/">http://yoursite.com/2020/02/08/apply-new-theme/</a>
-            <p>发表日期：<a href="http://yoursite.com/2020/02/08/apply-new-theme/">February 8th 2020, 6:56:12 pm</a>
-            <p>更新日期：<a href="http://yoursite.com/2020/02/08/apply-new-theme/">February 8th 2020, 6:56:12 pm</a>
+        <div class="license-wrapper"> <!-- <a href="http://mrfranken.github.io -->
+            <p>原文作者：<a href=/>Vince Wen</a>
+            <p>原文链接：<a href="http://mrfranken.github.io/2020/02/09/chromedriver/">http://mrfranken.github.io/2020/02/09/chromedriver/</a>
+            <p>发表日期：<a href="http://mrfranken.github.io/2020/02/09/chromedriver/">February 9th 2020, 3:01:07 pm</a>
+            <p>更新日期：<a href="http://mrfranken.github.io/2020/02/09/chromedriver/">February 9th 2020, 3:23:00 pm</a>
             <p>版权声明：本文采用<a rel="license noopener" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可</p>
         </div>
     
@@ -452,18 +462,7 @@ height:50vh;
         
     
         
-            
-                <a href="//github.com/Mrfranken" class="iconfont-archer github" target="_blank" title=github></a>
-            
-        
     
-        
-            
-                <span class="iconfont-archer wechat" title=wechat>
-                  
-                  <img class="profile-qr" src="/assets/example_qr.png" />
-                </span>
-            
         
     
         
@@ -529,13 +528,13 @@ height:50vh;
 
 
 
-top:50vh;
+top:60vh;
 
     >
         <div class="toc-catalog">
             <span class="iconfont-archer catalog-icon">&#xe613;</span><span>CATALOG</span>
         </div>
-        
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#如何在python中手动启动chromederiver"><span class="toc-number">1.</span> <span class="toc-text">如何在python中手动启动chromederiver</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#启动chrmedriver"><span class="toc-number">1.0.1.</span> <span class="toc-text">启动chrmedriver</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#from-selenium-webdriver-remote-remote-connection-import-RemoteConnection-line-397"><span class="toc-number">1.0.2.</span> <span class="toc-text">from selenium.webdriver.remote.remote_connection import RemoteConnection line 397</span></a></li></ol></li></ol></li></ol>
     </div>
     
     <div class="back-top iconfont-archer">&#xe639;</div>
@@ -584,27 +583,22 @@ top:50vh;
     
     
         <li class="archive-post-item">
-            <span class="archive-post-date">02/08</span><a class="archive-post-title" href= "/2020/02/08/apply-new-theme/" >apply new theme</a>
+            <span class="archive-post-date">02/09</span><a class="archive-post-title" href= "/2020/02/09/chromedriver/" >如何在python中手动启动chromederiver</a>
         </li>
     
     
-    
-    
-    
-        </ul>
-    
-    <div class="archive-year"> Invalid date </div>
-    <ul class="year-list">
-    
-    
         <li class="archive-post-item">
-            <span class="archive-post-date">Invalid date</span><a class="archive-post-title" href= "/2020/02/08/hello-world/" >Hello World</a>
+            <span class="archive-post-date">02/08</span><a class="archive-post-title" href= "/2020/02/08/hello-world/" >Hello World</a>
         </li>
     
     </div>
   </div>
         <div class="sidebar-panel-tags">
     <div class="sidebar-tags-name">
+    
+        <span class="sidebar-tag-name" data-tags="测试"><span class="iconfont-archer">&#xe606;</span>测试</span>
+    
+        <span class="sidebar-tag-name" data-tags="selenium"><span class="iconfont-archer">&#xe606;</span>selenium</span>
     
     </div>
     <div class="iconfont-archer sidebar-tags-empty">&#xe678;</div>
@@ -639,6 +633,8 @@ jsonContent:
         <div class="sidebar-panel-categories">
     <div class="sidebar-categories-name">
     
+        <span class="sidebar-category-name" data-categories="测试技术"><span class="iconfont-archer">&#xe60a;</span>测试技术</span>
+    
     </div>
     <div class="iconfont-archer sidebar-categories-empty">&#xe678;</div>
     <div class="sidebar-categories-list"></div>
@@ -648,7 +644,7 @@ jsonContent:
     <script>
     var siteMeta = {
         root: "/",
-        author: "John Doe"
+        author: "Vince Wen"
     }
 </script>
     <!-- CDN failover -->
