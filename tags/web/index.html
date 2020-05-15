@@ -22,7 +22,7 @@
     <meta name="description" content="">
     <meta http-equiv="Cache-control" content="no-cache">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
-    <title>HTTP系列 - HTTP协议结构和通讯原理 · python</title>
+    <title>python</title>
     <style type="text/css">
     @font-face {
         font-family: 'Oswald-Regular';
@@ -203,23 +203,12 @@
 <meta name="generator" content="Hexo 4.2.0"></head>
 
     
-        <body class="post-body">
-    
     
 <header class="header">
 
     <div class="read-progress"></div>
     <div class="header-sidebar-menu">&#xe775;</div>
     <!-- post页的toggle banner  -->
-    
-    <div class="banner">
-            <div class="blog-title">
-                <a href="/" >KnowYourself</a>
-            </div>
-            <div class="post-title">
-                <a href="#" class="post-name">HTTP系列 - HTTP协议结构和通讯原理</a>
-            </div>
-    </div>
     
     <a class="home-link" href=/>KnowYourself</a>
 </header>
@@ -231,74 +220,24 @@
 
 
 
-
-height:60vh;
 ">
     
     <!-- 主页  -->
-    
-    
-    <!-- 404页  -->
             
     <div class="site-intro-placeholder"></div>
-    <div class="site-intro-img" style="background-image: url(https://source.unsplash.com/2560x900?coding,water,tree,cat,dog)"></div>
+    <div class="site-intro-img" style="background-image: url(/)"></div>
     <div class="site-intro-meta">
         <!-- 标题  -->
         <h1 class="intro-title">
             <!-- 主页  -->
-            
-            HTTP系列 - HTTP协议结构和通讯原理
-            <!-- 404 -->
             
         </h1>
         <!-- 副标题 -->
         <p class="intro-subtitle">
             <!-- 主页副标题  -->
             
-            
-            <!-- 404 -->
-            
         </p>
         <!-- 文章页meta -->
-        
-            <div class="post-intros">
-                <!-- 文章页标签  -->
-                
-                    <div class= post-intro-tags >
-    
-        <a class="post-tag" href="javascript:void(0);" data-tags = "HTTP">HTTP</a>
-    
-</div>
-                
-                
-                    <div class="post-intro-read">
-                        <span>字数统计: <span class="post-count word-count">1.5k</span>阅读时长: <span class="post-count reading-time">5 min</span></span>
-                    </div>
-                
-                <div class="post-intro-meta">
-                    <span class="post-intro-calander iconfont-archer">&#xe676;</span>
-                    <span class="post-intro-time">2018/04/13</span>
-                    
-                    <span id="busuanzi_container_page_pv" class="busuanzi-pv">
-                        <span class="iconfont-archer">&#xe602;</span>
-                        <span id="busuanzi_value_page_pv"></span>
-                    </span>
-                    
-                    <span class="shareWrapper">
-                        <span class="iconfont-archer shareIcon">&#xe71d;</span>
-                        <span class="shareText">Share</span>
-                        <ul class="shareList">
-                            <li class="iconfont-archer share-qr" data-type="qr">&#xe75b;
-                                <div class="share-qrcode"></div>
-                            </li>
-                            <li class="iconfont-archer" data-type="weibo">&#xe619;</li>
-                            <li class="iconfont-archer" data-type="qzone">&#xe62e;</li>
-                            <li class="iconfont-archer" data-type="twitter">&#xe634;</li>
-                            <li class="iconfont-archer" data-type="facebook">&#xe67a;</li>
-                        </ul>
-                    </span>
-                </div>
-            </div>
         
     </div>
 </div>
@@ -399,212 +338,43 @@ height:60vh;
 </script>        
         <img class="loading" src="/assets/loading.svg" style="display: block; margin: 6rem auto 0 auto; width: 6rem; height: 6rem;" />
         <div class="container container-unloaded">
-            <main class="main post-page">
-    <article class="article-entry">
-        <h2 id="HTTP协议"><a href="#HTTP协议" class="headerlink" title="HTTP协议"></a>HTTP协议</h2><h3 id="HTTP协议的特点"><a href="#HTTP协议的特点" class="headerlink" title="HTTP协议的特点"></a>HTTP协议的特点</h3><ul>
-<li><strong>简单快速</strong>：客户向服务器请求服务时，只需传送请求方法和路径。请求方法常用的有GET、HEAD、POST。每种方法规定了客户与服务器联系的类型不同。由于HTTP协议简单，使得HTTP服务器的程序规模小，因而通信速度很快；</li>
-<li><strong>灵活</strong>：HTTP允许传输任意类型的数据对象。正在传输的类型由Content-Type加以标记；</li>
-<li><strong>无连接</strong>：无连接的含义是限制每次连接只处理一个请求。服务器处理完客户的请求，并收到客户的应答后，即断开连接。采用这种方式可以节省传输时间；</li>
-<li><strong>无状态</strong>：HTTP协议是无状态协议。无状态是指协议对于事务处理没有记忆能力。缺少状态意味着如果后续处理需要前面的信息，则它必须重传，这样可能导致每次连接传送的数据量增大。另一方面，在服务器不需要先前信息时它的应答就较快</li>
-<li>支持B/S及C/S模式。</li>
-</ul>
-<h3 id="URL与URI的区别与联系"><a href="#URL与URI的区别与联系" class="headerlink" title="URL与URI的区别与联系"></a>URL与URI的区别与联系</h3><ul>
-<li>URI： uniform resource identifier，统一资源标识符</li>
-<li>URL：uniform resource locator，统一资源定位器</li>
-<li>URN：uniform resource name，统一资源命名</li>
-</ul>
-<p><a href="https://imgchr.com/i/GhndhR" target="_blank" rel="noopener"><img src="https://s1.ax1x.com/2020/04/08/GhndhR.jpg" alt="GhndhR.jpg"></a></p>
-<p>我们在浏览器里输入的web地址是URL还是URI？</p>
-<ul>
-<li>URI可以分为URL，URN或同时具备locators和names特性的一个东西</li>
-<li>URN是唯一标识的一部分，是身份信息</li>
-<li>URL表示位置信息（定位资源）</li>
-<li>URL是URI的一种，但不是所有的URI都是URL</li>
-<li>URI和URL最大的差别是“<strong>访问机制</strong>”</li>
-</ul>
-<h3 id="HTTP报文结构分析"><a href="#HTTP报文结构分析" class="headerlink" title="HTTP报文结构分析"></a>HTTP报文结构分析</h3><h4 id="请求报文"><a href="#请求报文" class="headerlink" title="请求报文"></a>请求报文</h4><p><a href="https://imgchr.com/i/Ghn091" target="_blank" rel="noopener"><img src="https://s1.ax1x.com/2020/04/08/Ghn091.jpg" alt="Ghn091.jpg"></a></p>
-<p>HTTP的报文头大体可以分为四类</p>
-<ul>
-<li>通用报文头<br><a href="https://imgchr.com/i/Ghd1II" target="_blank" rel="noopener"><img src="https://s1.ax1x.com/2020/04/08/Ghd1II.jpg" alt="Ghd1II.jpg"></a></li>
-<li>请求报文头<br><a href="https://imgchr.com/i/Ghlisx" target="_blank" rel="noopener"><img src="https://s1.ax1x.com/2020/04/08/Ghlisx.jpg" alt="Ghlisx.jpg"></a></li>
-<li>响应报文头<br><a href="https://imgchr.com/i/GhlPQ1" target="_blank" rel="noopener"><img src="https://s1.ax1x.com/2020/04/08/GhlPQ1.jpg" alt="GhlPQ1.jpg"></a></li>
-<li>实体报文头<br><a href="https://imgchr.com/i/GhQzi4" target="_blank" rel="noopener"><img src="https://s1.ax1x.com/2020/04/08/GhQzi4.jpg" alt="GhQzi4.jpg"></a></li>
-</ul>
-<h4 id="响应报文"><a href="#响应报文" class="headerlink" title="响应报文"></a>响应报文</h4><p><a href="https://imgchr.com/i/GhlVoD" target="_blank" rel="noopener"><img src="https://s1.ax1x.com/2020/04/08/GhlVoD.md.jpg" alt="GhlVoD.md.jpg"></a></p>
-<h4 id="HTTP请求方法剖析"><a href="#HTTP请求方法剖析" class="headerlink" title="HTTP请求方法剖析"></a>HTTP请求方法剖析</h4><ul>
-<li>HTTP/1.1常用方法<ul>
-<li>GET<ul>
-<li>GET方法用来请求访问已被URI识别的资源；</li>
-<li>指定的资源经服务器端解析后返回响应内容；</li>
-<li>也可以用来提交表单和其他数，比如 <a href="http://localhost/login.php?username=aa&amp;pwd=123" target="_blank" rel="noopener">http://localhost/login.php?username=aa&amp;pwd=123</a></li>
-</ul>
-</li>
-<li>POST<ul>
-<li>POST方法的主要目的不是获取响应主体的内容，一般用来传输实体的主体（提交表单）</li>
-</ul>
-</li>
-<li>PUT<ul>
-<li>从客户端向服务器传送的数据取代指定的文档内容；</li>
-<li>与POST方法最大的不同是：PUT是幂等的，POST不是幂等的（理解幂等的概念<br>参看<a href="https://blog.csdn.net/github_36032947/article/details/78421513）；" target="_blank" rel="noopener">https://blog.csdn.net/github_36032947/article/details/78421513）；</a></li>
-<li>PUT方法更多时候用作传输资源；</li>
-</ul>
-</li>
-<li>HEAD(不作了解)</li>
-<li>DELETE(不作了解)</li>
-<li>OPTIONS<ul>
-<li>用来查询针对请求URI指定的资源支持的方法</li>
-</ul>
-</li>
-<li>TRACE(不作了解)<ul>
-<li>回显服务器收到的请求，主要用于测试或者诊断</li>
-</ul>
-</li>
-<li>CONNECT（不作了解）<ul>
-<li>开启一个客户端与所请求资源之间的双向沟通的通道，它可以用来创建隧道</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">GET和POST的区别？</span><br><span class="line">1. GET通过URL提交数据，数据在URL中可看到。POST提交数据时，数据放在HTTP请求的Body中；</span><br><span class="line">3. GET请求有大小限制，POST请求没有；</span><br><span class="line">3. 从安全性来看，POST对数据的保护性更好</span><br></pre></td></tr></table></figure>
-
-<h3 id="响应状态码"><a href="#响应状态码" class="headerlink" title="响应状态码"></a>响应状态码</h3><p>用以表示网页服务器超文本传输协议响应状态的3位数字代码</p>
-<table>
-<thead>
-<tr>
-<th>状态码</th>
-<th>英文名称</th>
-<th>描述</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>200</td>
-<td>OK</td>
-<td>请求成功，请求所希望的响应或数据体将随此响应返回</td>
-</tr>
-<tr>
-<td>202</td>
-<td>Accepted</td>
-<td>已接受，已经接受请求，但未处理完成</td>
-</tr>
-<tr>
-<td>206</td>
-<td>Partial Content</td>
-<td>部分内容，服务器成功处理了部分GET请求 （断点续传）</td>
-</tr>
-<tr>
-<td>301</td>
-<td>Moved Permanently</td>
-<td>永久移动，请求的资源已被永久的移动到新的URI，返回信息会包括新的URI。今后任何新的请求都应使用新的URI代替（永久重定向）</td>
-</tr>
-<tr>
-<td>302</td>
-<td>Found</td>
-<td>临时移动，与301类似。但资源只是临时被移动。客户端应继续使用原有URI（临时重定向）</td>
-</tr>
-<tr>
-<td>400</td>
-<td>Bad Request</td>
-<td>客户端请求的语法错误，服务器无法理解</td>
-</tr>
-<tr>
-<td>401</td>
-<td>Unauthorized</td>
-<td>请求要求用户的身份认证</td>
-</tr>
-<tr>
-<td>403</td>
-<td>Forbidden</td>
-<td>服务器理解请求客户端的请求，但是拒绝执行此请求</td>
-</tr>
-<tr>
-<td>404</td>
-<td>Not Found</td>
-<td>服务器无法根据客户端的请求找到资源（网页）</td>
-</tr>
-<tr>
-<td>500</td>
-<td>Internal Server Error</td>
-<td>服务器内部错误，无法完成请求</td>
-</tr>
-<tr>
-<td>502</td>
-<td>Bad Gateway</td>
-<td>充当网关或代理的服务器，从远端服务器收到了一个无效的请求</td>
-</tr>
-</tbody></table>
-<h3 id="Cookie与Session"><a href="#Cookie与Session" class="headerlink" title="Cookie与Session"></a>Cookie与Session</h3><h4 id="什么是Cookie？"><a href="#什么是Cookie？" class="headerlink" title="什么是Cookie？"></a>什么是Cookie？</h4><ul>
-<li>Cookie实际上是小段的文本信息。客户端请求服务器，如果服务器需要记录该用户的状态，就向客户端浏览器颁发一个Cookie；</li>
-<li>客户端浏览器会把Cookie保存起来。当浏览器再请求该网站时，浏览器把请求的网址连同该Cookie一同提交给服务器。服务器检查该Cookie，以此来辨认用户状态。<blockquote>
-<p>打开一个网页，在浏览器的地址栏输入 javascript:alert(document.cookie) 可查看当前网页的Cookie</p>
-</blockquote>
-</li>
-</ul>
-<p><a href="https://imgchr.com/i/GbDI8U" target="_blank" rel="noopener"><img src="https://s1.ax1x.com/2020/04/11/GbDI8U.md.jpg" alt="GbDI8U.md.jpg"></a></p>
-<h4 id="什么是Session？"><a href="#什么是Session？" class="headerlink" title="什么是Session？"></a>什么是Session？</h4><ul>
-<li>Session是另一种记录客户状态的机制，保存在服务器上。客户端浏览器访问服务器的时候，服务端把客户端信息以某种形式记录在服务器上；</li>
-<li>客户端浏览器再次访问时只需要从Session中查找该客户的状态就可以了。<br><a href="https://imgchr.com/i/GbDo2F" target="_blank" rel="noopener"><img src="https://s1.ax1x.com/2020/04/11/GbDo2F.md.jpg" alt="GbDo2F.md.jpg"></a></li>
-<li>保存Session ID的方式：<ul>
-<li>Cookie</li>
-<li>URL重写</li>
-<li>隐藏表单</li>
-</ul>
-</li>
-</ul>
-<h4 id="Cookie与Session的异同点"><a href="#Cookie与Session的异同点" class="headerlink" title="Cookie与Session的异同点"></a>Cookie与Session的异同点</h4><ul>
-<li>存放位置不同。Cookie保存在客户端，Session保存在服务端；</li>
-<li>安全性（隐私策略）不同；</li>
-<li>有效期不同（Cookie可以保存很长时间，服务器会清理过期的Session ID）；</li>
-<li>对服务器造成的压力不同</li>
-</ul>
-<h3 id="常用请求头字段解析"><a href="#常用请求头字段解析" class="headerlink" title="常用请求头字段解析"></a>常用请求头字段解析</h3><p><a href="https://imgchr.com/i/Ghd8it" target="_blank" rel="noopener"><img src="https://s1.ax1x.com/2020/04/08/Ghd8it.md.jpg" alt="Ghd8it.md.jpg"></a><br><a href="https://imgchr.com/i/GhlpW9" target="_blank" rel="noopener"><img src="https://s1.ax1x.com/2020/04/08/GhlpW9.md.jpg" alt="GhlpW9.md.jpg"></a><br><a href="https://imgchr.com/i/Ghl9zR" target="_blank" rel="noopener"><img src="https://s1.ax1x.com/2020/04/08/Ghl9zR.md.jpg" alt="Ghl9zR.md.jpg"></a><br><a href="https://imgchr.com/i/GhlFL6" target="_blank" rel="noopener"><img src="https://s1.ax1x.com/2020/04/08/GhlFL6.md.jpg" alt="GhlFL6.md.jpg"></a><br><a href="https://imgchr.com/i/GhlAeK" target="_blank" rel="noopener"><img src="https://s1.ax1x.com/2020/04/08/GhlAeK.md.jpg" alt="GhlAeK.md.jpg"></a><br><a href="https://imgchr.com/i/GhlEdO" target="_blank" rel="noopener"><img src="https://s1.ax1x.com/2020/04/08/GhlEdO.md.jpg" alt="GhlEdO.md.jpg"></a></p>
-
-    </article>
-    <!-- license  -->
+            <main class="main index-page">
     
-        <div class="license-wrapper"> <!-- <a href="http://mrfranken.github.io -->
-            <!-- <p>原文作者：<a href=/>Vince Wen</a> -->
-            <p>原文作者：Vince Wen</a>
-            <!-- <p>原文链接：<a href="http://mrfranken.github.io/2018/04/13/HTTP%E7%B3%BB%E5%88%97-HTTP%E5%8D%8F%E8%AE%AE%E7%BB%93%E6%9E%84%E5%92%8C%E9%80%9A%E8%AE%AF%E5%8E%9F%E7%90%86/">http://mrfranken.github.io/2018/04/13/HTTP%E7%B3%BB%E5%88%97-HTTP%E5%8D%8F%E8%AE%AE%E7%BB%93%E6%9E%84%E5%92%8C%E9%80%9A%E8%AE%AF%E5%8E%9F%E7%90%86/</a> -->
-            <!-- <p>发表日期：<a href="http://mrfranken.github.io/2018/04/13/HTTP%E7%B3%BB%E5%88%97-HTTP%E5%8D%8F%E8%AE%AE%E7%BB%93%E6%9E%84%E5%92%8C%E9%80%9A%E8%AE%AF%E5%8E%9F%E7%90%86/">April 13th 2018, 12:00:00 am</a> -->
-            <p>发表日期：April 13th 2018, 12:00:00 am</a>
-            <!-- <p>更新日期：<a href="http://mrfranken.github.io/2018/04/13/HTTP%E7%B3%BB%E5%88%97-HTTP%E5%8D%8F%E8%AE%AE%E7%BB%93%E6%9E%84%E5%92%8C%E9%80%9A%E8%AE%AF%E5%8E%9F%E7%90%86/">April 11th 2020, 11:21:00 pm</a> -->
-            <p>版权声明：本文采用<a rel="license noopener" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可</p>
+    
+    
+    
+    
+    
+    <article class="index-post">
+        <a class="abstract-title" href = "/2020/05/15/flask%E7%9F%A5%E8%AF%86%E7%82%B9/" >
+            
+                <span>flask知识点</span>
+        </a>
+        <div class="abstract-content">
+            一些flask知识点
         </div>
+        <div class="abstract-post-meta">
+            <!-- date  -->
+            <div class="abstract-date">
+                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2020/05/15</span>
+            </div>
+            <!-- tags  -->
+            
+            <div class= abstract-tags >
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags = "python">python</a>
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags = "web">web</a>
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags = "flask">flask</a>
+    
+</div>
+            
+        </div>
+    </article>
     
     <!-- paginator  -->
-    <ul class="post-paginator">
-        <li class="next">
-            
-                <div class="nextSlogan">Next Post</div>
-                <a href= "/2018/04/16/HTTP%E7%B3%BB%E5%88%97-HTTP%E5%8D%8F%E8%AE%AE%E7%9A%84%E4%B8%80%E4%BA%9B%E7%89%B9%E6%80%A7%EF%BC%88%E4%B8%80%EF%BC%89/" title= "HTTP系列 - HTTP协议的一些特性（一）">
-                    <div class="nextTitle">HTTP系列 - HTTP协议的一些特性（一）</div>
-                </a>
-            
-        </li>
-        <li class="previous">
-            
-                <div class="prevSlogan">Previous Post</div>
-                <a href= "/2018/04/11/HTTP%E7%B3%BB%E5%88%97-%E9%80%8F%E8%BF%87TCP-IP%E7%9C%8BHTTP/" title= "HTTP系列 - 透过TCP/IP看HTTP">
-                    <div class="prevTitle">HTTP系列 - 透过TCP/IP看HTTP</div>
-                </a>
-            
-        </li>
-    </ul>
-    <!-- 评论插件 -->
-    <!-- 来必力City版安装代码 -->
-
-<!-- City版安装代码已完成 -->
     
-    
-    <!-- partial('_partial/comment/changyan') -->
-    <!--PC版-->
-
-
-    
-    
-
-    <!-- 评论 -->
 </main>
             <!-- profile -->
             
@@ -678,24 +448,6 @@ height:60vh;
 </footer>
     </div>
     <!-- toc -->
-    
-    <div class="toc-wrapper" style=
-    
-
-
-
-
-
-
-
-top:60vh;
-
-    >
-        <div class="toc-catalog">
-            <span class="iconfont-archer catalog-icon">&#xe613;</span><span>CATALOG</span>
-        </div>
-        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#HTTP协议"><span class="toc-number">1.</span> <span class="toc-text">HTTP协议</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#HTTP协议的特点"><span class="toc-number">1.1.</span> <span class="toc-text">HTTP协议的特点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#URL与URI的区别与联系"><span class="toc-number">1.2.</span> <span class="toc-text">URL与URI的区别与联系</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#HTTP报文结构分析"><span class="toc-number">1.3.</span> <span class="toc-text">HTTP报文结构分析</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#请求报文"><span class="toc-number">1.3.1.</span> <span class="toc-text">请求报文</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#响应报文"><span class="toc-number">1.3.2.</span> <span class="toc-text">响应报文</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#HTTP请求方法剖析"><span class="toc-number">1.3.3.</span> <span class="toc-text">HTTP请求方法剖析</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#响应状态码"><span class="toc-number">1.4.</span> <span class="toc-text">响应状态码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Cookie与Session"><span class="toc-number">1.5.</span> <span class="toc-text">Cookie与Session</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#什么是Cookie？"><span class="toc-number">1.5.1.</span> <span class="toc-text">什么是Cookie？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#什么是Session？"><span class="toc-number">1.5.2.</span> <span class="toc-text">什么是Session？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Cookie与Session的异同点"><span class="toc-number">1.5.3.</span> <span class="toc-text">Cookie与Session的异同点</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#常用请求头字段解析"><span class="toc-number">1.6.</span> <span class="toc-text">常用请求头字段解析</span></a></li></ol></li></ol>
-    </div>
     
     <div class="back-top iconfont-archer">&#xe639;</div>
     <div class="sidebar sidebar-hide">
@@ -971,8 +723,6 @@ jsonContent:
     
     </div>
     <!-- async load share.js -->
-    
-        <script src="/scripts/share.js" async></script>    
      
     </body>
 </html>
