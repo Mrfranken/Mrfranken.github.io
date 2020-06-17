@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="ch">
+    <!-- title -->
+
+
+
+
+<!-- keywords -->
+
+
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" >
+    <meta name="author" content="Vince Wen">
+    <meta name="renderer" content="webkit">
+    <meta name="copyright" content="Vince Wen">
+    
+    <meta name="keywords" content="python,测试开发,hexo-theme,hexo-blog">
+    
+    <meta name="description" content="">
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <title>手把手分析selenium启动流程 · python</title>
+    <style type="text/css">
+    @font-face {
+        font-family: 'Oswald-Regular';
+        src: url("/font/Oswald-Regular.ttf");
+    }
+
+    body {
+        margin: 0;
+    }
+
+    header,
+    footer,
+    .back-top,
+    .sidebar,
+    .container,
+    .site-intro-meta,
+    .toc-wrapper {
+        display: none;
+    }
+
+    .site-intro {
+        position: relative;
+        z-index: 3;
+        width: 100%;
+        /* height: 50vh; */
+        overflow: hidden;
+    }
+
+    .site-intro-placeholder {
+        position: absolute;
+        z-index: -2;
+        top: 0;
+        left: 0;
+        width: calc(100% + 300px);
+        height: 100%;
+        background: repeating-linear-gradient(-45deg, #444 0, #444 80px, #333 80px, #333 160px);
+        background-position: center center;
+        transform: translate3d(-226px, 0, 0);
+        animation: gradient-move 2.5s ease-out 0s infinite;
+    }
+
+    @keyframes gradient-move {
+        0% {
+            transform: translate3d(-226px, 0, 0);
+        }
+        100% {
+            transform: translate3d(0, 0, 0);
+        }
+    }
+
+</style>
+
+    <link rel="preload" href= "/css/style.css?v=20180824" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    <link rel="stylesheet" href= "/css/mobile.css?v=20180824" media="(max-width: 980px)">
+    
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    
+    <!-- /*! loadCSS. [c]2017 Filament Group, Inc. MIT License */
+/* This file is meant as a standalone workflow for
+- testing support for link[rel=preload]
+- enabling async CSS loading in browsers that do not support rel=preload
+- applying rel preload css once loaded, whether supported or not.
+*/ -->
+<script>
+(function( w ){
+	"use strict";
+	// rel=preload support test
+	if( !w.loadCSS ){
+		w.loadCSS = function(){};
+	}
+	// define on the loadCSS obj
+	var rp = loadCSS.relpreload = {};
+	// rel=preload feature support test
+	// runs once and returns a function for compat purposes
+	rp.support = (function(){
+		var ret;
+		try {
+			ret = w.document.createElement( "link" ).relList.supports( "preload" );
+		} catch (e) {
+			ret = false;
+		}
+		return function(){
+			return ret;
+		};
+	})();
+
+	// if preload isn't supported, get an asynchronous load by using a non-matching media attribute
+	// then change that media back to its intended value on load
+	rp.bindMediaToggle = function( link ){
+		// remember existing media attr for ultimate state, or default to 'all'
+		var finalMedia = link.media || "all";
+
+		function enableStylesheet(){
+			link.media = finalMedia;
+		}
+
+		// bind load handlers to enable media
+		if( link.addEventListener ){
+			link.addEventListener( "load", enableStylesheet );
+		} else if( link.attachEvent ){
+			link.attachEvent( "onload", enableStylesheet );
+		}
+
+		// Set rel and non-applicable media type to start an async request
+		// note: timeout allows this to happen async to let rendering continue in IE
+		setTimeout(function(){
+			link.rel = "stylesheet";
+			link.media = "only x";
+		});
+		// also enable media after 3 seconds,
+		// which will catch very old browsers (android 2.x, old firefox) that don't support onload on link
+		setTimeout( enableStylesheet, 3000 );
+	};
+
+	// loop through link elements in DOM
+	rp.poly = function(){
+		// double check this to prevent external calls from running
+		if( rp.support() ){
+			return;
+		}
+		var links = w.document.getElementsByTagName( "link" );
+		for( var i = 0; i < links.length; i++ ){
+			var link = links[ i ];
+			// qualify links to those with rel=preload and as=style attrs
+			if( link.rel === "preload" && link.getAttribute( "as" ) === "style" && !link.getAttribute( "data-loadcss" ) ){
+				// prevent rerunning on link
+				link.setAttribute( "data-loadcss", true );
+				// bind listeners to toggle media back
+				rp.bindMediaToggle( link );
+			}
+		}
+	};
+
+	// if unsupported, run the polyfill
+	if( !rp.support() ){
+		// run once at least
+		rp.poly();
+
+		// rerun poly on an interval until onload
+		var run = w.setInterval( rp.poly, 500 );
+		if( w.addEventListener ){
+			w.addEventListener( "load", function(){
+				rp.poly();
+				w.clearInterval( run );
+			} );
+		} else if( w.attachEvent ){
+			w.attachEvent( "onload", function(){
+				rp.poly();
+				w.clearInterval( run );
+			} );
+		}
+	}
+
+
+	// commonjs
+	if( typeof exports !== "undefined" ){
+		exports.loadCSS = loadCSS;
+	}
+	else {
+		w.loadCSS = loadCSS;
+	}
+}( typeof global !== "undefined" ? global : this ) );
+</script>
+
+    <link rel="icon" href= "/assets/bebrave.ico" />
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.min.js" as="script" />
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js" as="script" />
+    <link rel="preload" href="/scripts/main.js" as="script" />
+    <link rel="preload" as="font" href="/font/Oswald-Regular.ttf" crossorigin>
+    <link rel="preload" as="font" href="https://at.alicdn.com/t/font_327081_1dta1rlogw17zaor.woff" crossorigin>
+    
+    <!-- fancybox -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js" defer></script>
+    <!-- 百度统计  -->
+    
+    <!-- 谷歌统计  -->
+    
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+    
+        <body class="post-body">
+    
+    
+<header class="header">
+
+    <div class="read-progress"></div>
+    <div class="header-sidebar-menu">&#xe775;</div>
+    <!-- post页的toggle banner  -->
+    
+    <div class="banner">
+            <div class="blog-title">
+                <a href="/" >KnowYourself</a>
+            </div>
+            <div class="post-title">
+                <a href="#" class="post-name">手把手分析selenium启动流程</a>
+            </div>
+    </div>
+    
+    <a class="home-link" href=/>KnowYourself</a>
+</header>
+    <div class="wrapper">
+        <div class="site-intro" style="
+
+
+
+
+
+
+
+height:60vh;
+">
+    
+    <!-- 主页  -->
+    
+    
+    <!-- 404页  -->
+            
+    <div class="site-intro-placeholder"></div>
+    <div class="site-intro-img" style="background-image: url(https://source.unsplash.com/2560x900?coding,water,tree,cat,dog)"></div>
+    <div class="site-intro-meta">
+        <!-- 标题  -->
+        <h1 class="intro-title">
+            <!-- 主页  -->
+            
+            手把手分析selenium启动流程
+            <!-- 404 -->
+            
+        </h1>
+        <!-- 副标题 -->
+        <p class="intro-subtitle">
+            <!-- 主页副标题  -->
+            
+            
+            <!-- 404 -->
+            
+        </p>
+        <!-- 文章页meta -->
+        
+            <div class="post-intros">
+                <!-- 文章页标签  -->
+                
+                    <div class= post-intro-tags >
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags = "selenium">selenium</a>
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags = "python">python</a>
+    
+</div>
+                
+                
+                    <div class="post-intro-read">
+                        <span>字数统计: <span class="post-count word-count">3.3k</span>阅读时长: <span class="post-count reading-time">16 min</span></span>
+                    </div>
+                
+                <div class="post-intro-meta">
+                    <span class="post-intro-calander iconfont-archer">&#xe676;</span>
+                    <span class="post-intro-time">2020/05/01</span>
+                    
+                    <span id="busuanzi_container_page_pv" class="busuanzi-pv">
+                        <span class="iconfont-archer">&#xe602;</span>
+                        <span id="busuanzi_value_page_pv"></span>
+                    </span>
+                    
+                    <span class="shareWrapper">
+                        <span class="iconfont-archer shareIcon">&#xe71d;</span>
+                        <span class="shareText">Share</span>
+                        <ul class="shareList">
+                            <li class="iconfont-archer share-qr" data-type="qr">&#xe75b;
+                                <div class="share-qrcode"></div>
+                            </li>
+                            <li class="iconfont-archer" data-type="weibo">&#xe619;</li>
+                            <li class="iconfont-archer" data-type="qzone">&#xe62e;</li>
+                            <li class="iconfont-archer" data-type="twitter">&#xe634;</li>
+                            <li class="iconfont-archer" data-type="facebook">&#xe67a;</li>
+                        </ul>
+                    </span>
+                </div>
+            </div>
+        
+    </div>
+</div>
+        <script>
+ 
+  // get user agent
+  var browser = {
+    versions: function () {
+      var u = window.navigator.userAgent;
+      return {
+        userAgent: u,
+        trident: u.indexOf('Trident') > -1, //IE内核
+        presto: u.indexOf('Presto') > -1, //opera内核
+        webKit: u.indexOf('AppleWebKit') > -1, //苹果、谷歌内核
+        gecko: u.indexOf('Gecko') > -1 && u.indexOf('KHTML') == -1, //火狐内核
+        mobile: !!u.match(/AppleWebKit.*Mobile.*/), //是否为移动终端
+        ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端
+        android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1, //android终端或者uc浏览器
+        iPhone: u.indexOf('iPhone') > -1 || u.indexOf('Mac') > -1, //是否为iPhone或者安卓QQ浏览器
+        iPad: u.indexOf('iPad') > -1, //是否为iPad
+        webApp: u.indexOf('Safari') == -1, //是否为web应用程序，没有头部与底部
+        weixin: u.indexOf('MicroMessenger') == -1, //是否为微信浏览器
+        uc: u.indexOf('UCBrowser') > -1 //是否为android下的UC浏览器
+      };
+    }()
+  }
+  console.log("userAgent:" + browser.versions.userAgent);
+
+  // callback
+  function fontLoaded() {
+    console.log('font loaded');
+    if (document.getElementsByClassName('site-intro-meta')) {
+      document.getElementsByClassName('intro-title')[0].classList.add('intro-fade-in');
+      document.getElementsByClassName('intro-subtitle')[0].classList.add('intro-fade-in');
+      var postIntros = document.getElementsByClassName('post-intros')[0]
+      if (postIntros) {
+        postIntros.classList.add('post-fade-in');
+      }
+    }
+  }
+
+  // UC不支持跨域，所以直接显示
+  function asyncCb(){
+    if (browser.versions.uc) {
+      console.log("UCBrowser");
+      fontLoaded();
+    } else {
+      WebFont.load({
+        custom: {
+          families: ['Oswald-Regular']
+        },
+        loading: function () {  //所有字体开始加载
+          // console.log('loading');
+        },
+        active: function () {  //所有字体已渲染
+          fontLoaded();
+        },
+        inactive: function () { //字体预加载失败，无效字体或浏览器不支持加载
+          console.log('inactive: timeout');
+          fontLoaded();
+        },
+        timeout: 5000 // Set the timeout to two seconds
+      });
+    }
+  }
+
+  function asyncErr(){
+    console.warn('script load from CDN failed, will load local script')
+  }
+
+  // load webfont-loader async, and add callback function
+  function async(u, cb, err) {
+    var d = document, t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (cb) { o.addEventListener('load', function (e) { cb(null, e); }, false); }
+    if (err) { o.addEventListener('error', function (e) { err(null, e); }, false); }
+    s.parentNode.insertBefore(o, s);
+  }
+
+  var asyncLoadWithFallBack = function(arr, success, reject) {
+      var currReject = function(){
+        reject()
+        arr.shift()
+        if(arr.length)
+          async(arr[0], success, currReject)
+        }
+
+      async(arr[0], success, currReject)
+  }
+
+  asyncLoadWithFallBack([
+    "https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.min.js", 
+    "https://cdn.bootcss.com/webfont/1.6.28/webfontloader.js",
+    "/lib/webfontloader.min.js"
+  ], asyncCb, asyncErr)
+</script>        
+        <img class="loading" src="/assets/loading.svg" style="display: block; margin: 6rem auto 0 auto; width: 6rem; height: 6rem;" />
+        <div class="container container-unloaded">
+            <main class="main post-page">
+    <article class="article-entry">
+        <p>python selenium库的解读</p>
+<p>IDE: Pycharm</p>
+<p>先给出这次源码阅读的测试脚本：</p>
+<pre><code>from selenium.webdriver import Chrome
+from selenium.webdriver.chrome.options import Options as ChromeOptions
+
+
+class BaseWebdriver(object):
+
+    def _add_proxy(self, option):
+        option.add_argument(&apos;--proxy-server=http://x.x.x.x&apos;)
+        return option
+
+    def _setup_headless(self, option):
+        option.add_argument(&apos;--headless&apos;)
+        return option
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.close()
+
+
+class CustomChromeWebdriver(Chrome, BaseWebdriver):
+    def __init__(self, download_dir, headless=False):
+        chrome_options = ChromeOptions()
+        chrome_options = self._self_define_download_dir(chrome_options, download_dir)
+        chrome_options.add_argument(&apos;--ignore-certificate-errors&apos;)  # 启动参数1
+        chrome_options.add_argument(&apos;--no-sandbox&apos;)  # 启动参数2
+        chrome_options.add_argument(&apos;--disable-gpu&apos;)  # 启动参数3
+
+        if headless:  # 用来控制是否已headless模式启动
+            chrome_options = self._setup_headless(chrome_options)
+        super(CustomChromeWebdriver, self).__init__(chrome_options=chrome_options)
+
+    def _self_define_download_dir(self, option, download_dir):
+        prefs = {&quot;profile.default_content_settings.popups&quot;: 0,
+                 &quot;download.default_directory&quot;: download_dir}
+        option.add_experimental_option(&apos;prefs&apos;, prefs)
+        return option
+
+
+if __name__ == &apos;__main__&apos;:
+    driver = CustomChromeWebdriver(r&apos;C:\\D&apos;, False)
+    driver.get(&apos;https://www.baidu.com&apos;)
+    elem = driver.find_element_by_xpath(&quot;//input[@type=&apos;submit&apos;]&quot;)
+    elem.click()
+    title = driver.title()</code></pre><p>看下CustomChromeWebdriver这个类，使用ChromeOptions设置了一些启动的参数（具体见代码注释）。调用方法是：启动浏览器，使用浏览器访问百度，找到百度的搜索按钮并点击。</p>
+<p>使用Pycharm找到 selenium -&gt; webdriver -&gt; chrome -&gt; options.py，打开文件可以看到里面有个Options的类，专门服务于chrome，同时定义了一些方法去添加启动参数。这里不做深究，因为里面没什么东西。</p>
+<p>selenium -&gt; webdriver -&gt; chrome -&gt; webdriver.py 解读</p>
+<p>启动测试脚本，在 selenium -&gt; webdriver -&gt; chrome -&gt; webdriver.py 的int函数中打上断点。我们一步步来看：</p>
+<pre><code>if chrome_options:
+    warnings.warn(&apos;use options instead of chrome_options&apos;,
+                  DeprecationWarning, stacklevel=2)
+    options = chrome_options
+
+if options is None:
+    # desired_capabilities stays as passed in
+    if desired_capabilities is None:
+        desired_capabilities = self.create_options().to_capabilities()
+else:
+    if desired_capabilities is None:
+        desired_capabilities = options.to_capabilities()
+    else:
+        desired_capabilities.update(options.to_capabilities())
+
+# 首先是这一段，主要就是讲传进来的 options、desired_capabilities 和 chrome_options 通通转化成 desired_capabilities，我们来看下此时的desired_capabilities是什么样：
+{&apos;browserName&apos;: &apos;chrome&apos;,
+ &apos;version&apos;: &apos;&apos;,
+ &apos;platform&apos;: &apos;ANY&apos;,
+ &apos;goog:chromeOptions&apos;: {&apos;prefs&apos;: {&apos;profile.default_content_settings.popups&apos;: 0,
+   &apos;download.default_directory&apos;: &apos;C:\\\\D&apos;},
+  &apos;extensions&apos;: [],
+  &apos;args&apos;: [&apos;--ignore-certificate-errors&apos;, &apos;--no-sandbox&apos;, &apos;--disable-gpu&apos;]}}
+
+# 前三项 browserName、version、platform都是在ChromeOptions中给添加进去
+# 后面的 goog:chromeOptions 是ChromeOptions的类属性
+# {&apos;prefs&apos;: {&apos;profile.default_content_settings.popups&apos;: 0,
+   &apos;download.default_directory&apos;: &apos;C:\\\\D&apos;}是我们测试脚本中添加进来的
+# 最后的[&apos;--ignore-certificate-errors&apos;, &apos;--no-sandbox&apos;, &apos;--disable-gpu&apos;]也是来自脚本
+
+self.service = Service(
+    executable_path,
+    port=port,
+    service_args=service_args,
+    log_path=service_log_path)
+self.service.start()
+
+# 打开Service这个类（selenium -&gt; webdriver -&gt; chrome -&gt; service.py），可以看到它初始化了selenium -&gt; webdriver -&gt; common -&gt; service.py中的Service这个类。
+# 同时self.service.start()调用的也是Service中的start方法，我们看看这个方法里面都是什么：
+
+def start(self):
+    &quot;&quot;&quot;
+    Starts the Service.
+    &quot;&quot;&quot;
+    try:
+        cmd = [self.path]
+        cmd.extend(self.command_line_args())
+        self.process = subprocess.Popen(cmd, env=self.env,
+                                        close_fds=platform.system() != &apos;Windows&apos;,
+                                        stdout=self.log_file,
+                                        stderr=self.log_file,
+                                        stdin=PIPE)
+    except：
+    ...
+    ...
+    ...
+
+# 首先第一行是一个path，这个path是chromedriver的执行path，当前我们没有指定，默认值是字符串 chromedriver
+# 第二行command_line_args是什么东西呢？在 selenium -&gt; webdriver -&gt; chrome -&gt; service.py中实现了它，实际上就是给了一个 --port 的参数，然后放到父类Service的start方法中组合起来。
+# 最后这个cmd得到的是什么样子的：[&apos;chromedriver&apos;, &apos;--port=8034&apos;]
+# 可以看到start方法最终使用subprocess这个库去启动了chromedriver，并让他监听在8034这个端口上（8034是随机的，每次启动可能都不一样，这一块下次再说。）</code></pre><p>接着往下看，你会看到下面这样的一段代码：</p>
+<pre><code>try:
+    RemoteWebDriver.__init__(
+        self,
+        command_executor=ChromeRemoteConnection(
+            remote_server_addr=self.service.service_url,
+            keep_alive=keep_alive),
+        desired_capabilities=desired_capabilities)
+except Exception:
+    self.quit()
+    raise</code></pre><p>这里我们慢慢拆开看，首先我们可以知道：</p>
+<ul>
+<li>RemoteWebDriver 类接受两个参数： command_executor 和 desired_capabilities</li>
+<li>command_executor 是ChromeRemoteConnection的实例，并接受两个参数 remote_server_addr 和 keep_alive</li>
+<li>remote_server_addr 这个参数对应的值是self.service.service_url，这个是个什么东西？打印之后发现是一个url：<a href="http://localhost:8034" target="_blank" rel="noopener">http://localhost:8034</a></li>
+</ul>
+<p>selenium -&gt; webdriver -&gt; chrome -&gt; remote_connection.py 和 webdriver.py 解读</p>
+<p>接着上一节，我们说 ChromeRemoteConnection 要开始初始化了，进入到  remote_connection.py 查看这个类：</p>
+<pre><code>class ChromeRemoteConnection(RemoteConnection):
+
+    def __init__(self, remote_server_addr, keep_alive=True):
+        RemoteConnection.__init__(self, remote_server_addr, keep_alive)
+        self._commands[&quot;launchApp&quot;] = (&apos;POST&apos;, &apos;/session/$sessionId/chromium/launch_app&apos;)
+        self._commands[&quot;setNetworkConditions&quot;] = (&apos;POST&apos;, &apos;/session/$sessionId/chromium/network_conditions&apos;)
+        self._commands[&quot;getNetworkConditions&quot;] = (&apos;GET&apos;, &apos;/session/$sessionId/chromium/network_conditions&apos;)
+        self._commands[&apos;executeCdpCommand&apos;] = (&apos;POST&apos;, &apos;/session/$sessionId/goog/cdp/execute&apos;)</code></pre><p>可以发现只有几行代码，并且只是将 remote_server_addr, keep_alive 传递给了父类 RemoteConnection，然后在一个叫 _commands 的实例属性上添加了一些tuple。我们单步进入RemoteConnection 这个类（这里我截取了最重要的一部分）：</p>
+<pre><code># selenium.webdriver.remote.remote_connection
+class RemoteConnection(object):
+    ...
+    ...
+    ...
+
+    def __init__(self, remote_server_addr, keep_alive=False, resolve_ip=True):
+        ...
+        ...
+        ...
+        self._url = remote_server_addr  # init方法中第一件事是初始化了chromedriver监听端口的url：http://127.0.0.1:8034
+        if keep_alive:
+            self._conn = urllib3.PoolManager(timeout=self._timeout)  # 使用PoolManager初始化了一个连接池用来后续向的url发起请求
+        self._commands = {  # 初始化commans的mapping
+            Command.STATUS: (&apos;GET&apos;, &apos;/status&apos;),
+            Command.NEW_SESSION: (&apos;POST&apos;, &apos;/session&apos;),
+            Command.GET_ALL_SESSIONS: (&apos;GET&apos;, &apos;/sessions&apos;),
+            ...
+            ...
+            ...
+        }</code></pre><p>可以看到在 RemoteConnection 中使用 urllib3的PoolManager进行了初始化。然后下面就是非常长的self._commands的赋值。我们单步跳出init方法。</p>
+<p>ChromeRemoteConnection 初始化完成之后被赋值给了command_executor，接下来单步进入到 RemoteWebDriver 的init方法中：</p>
+<pre><code># selenium.webdriver.remote.webdriver
+def __init__(self, command_executor=&apos;http://127.0.0.1:4444/wd/hub&apos;,
+                 desired_capabilities=None, browser_profile=None, proxy=None,
+                 keep_alive=False, file_detector=None, options=None):
+    capabilities = {}
+    if options is not None:  # 如果options存在则将options转换成capabilities
+        capabilities = options.to_capabilities()
+    if desired_capabilities is not None:  # capabilities必须是一个dict类型
+        if not isinstance(desired_capabilities, dict):
+            raise WebDriverException(&quot;Desired Capabilities must be a dictionary&quot;)
+        else:
+            capabilities.update(desired_capabilities)
+    if proxy is not None:  # 判断proxy是否存在
+        warnings.warn(&quot;Please use FirefoxOptions to set proxy&quot;,
+                      DeprecationWarning, stacklevel=2)
+        proxy.add_to_capabilities(capabilities)
+    self.command_executor = command_executor  # 将 RemoteConnection 的实例赋值给command_executor
+    if type(self.command_executor) is bytes or isinstance(self.command_executor, str):  # 判断command_executor的类型，如果是字符串或bytes，则使用RemoteConnection加载
+        self.command_executor = RemoteConnection(command_executor, keep_alive=keep_alive)
+    self._is_remote = True
+    self.session_id = None
+    self.capabilities = {}
+    self.error_handler = ErrorHandler()
+    self.start_client()
+    if browser_profile is not None:
+        warnings.warn(&quot;Please use FirefoxOptions to set browser profile&quot;,
+                      DeprecationWarning, stacklevel=2)
+    self.start_session(capabilities, browser_profile)
+    self._switch_to = SwitchTo(self)
+    self._mobile = Mobile(self)
+    self.file_detector = file_detector or LocalFileDetector()</code></pre><p>这一段我捡最重要的说，在这个类中：</p>
+<ul>
+<li><p>将RemoteConnection 的实例赋值给command_executor</p>
+</li>
+<li><p>调用start_session这个方法，那我们看看start_session这个方法里面，单步进入（见下方代码）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"># selenium.webdriver.remote.webdriver</span><br><span class="line">def start_session(self, capabilities, browser_profile&#x3D;None):</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    Creates a new session with the desired capabilities.</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    ...</span><br><span class="line">    ...</span><br><span class="line">    ...</span><br><span class="line">    w3c_caps &#x3D; _make_w3c_caps(capabilities)  # 使用w3c规范capabilities</span><br><span class="line">    parameters &#x3D; &#123;&quot;capabilities&quot;: w3c_caps,</span><br><span class="line">                  &quot;desiredCapabilities&quot;: capabilities&#125;  # 不是很明白为什么使用w3c封装后，再加入desiredCapabilities，待研究</span><br><span class="line">    response &#x3D; self.execute(Command.NEW_SESSION, parameters)  # 发出打开浏览器的请求</span><br><span class="line">    if &#39;sessionId&#39; not in response:</span><br><span class="line">        response &#x3D; response[&#39;value&#39;]</span><br><span class="line">    self.session_id &#x3D; response[&#39;sessionId&#39;]  # 启动浏览器后获得chromedriver返回的sessionId</span><br><span class="line">    ...</span><br><span class="line">    ...</span><br><span class="line">    ...</span><br></pre></td></tr></table></figure>
+<p>在start_session中，做了这么几件事：</p>
+</li>
+<li><p>用_make_w3c_caps这个方法将我们我们初始化传递进来的参数进行了封装，使用w3c的标准剔除了capabilities当中不符合规范的字段（这个还需要再研究，为什么要用w3c的这个标准）</p>
+</li>
+<li><p>调用execute方法发出打开浏览器的请求</p>
+</li>
+<li><p>从返回的reponse中取出sessionId并赋值给属性session_id</p>
+</li>
+</ul>
+<p>接下来我们单步进入exexute方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"># selenium.webdriver.remote.webdriver</span><br><span class="line">def execute(self, driver_command, params&#x3D;None):</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    Sends a command to be executed by a command.CommandExecutor.</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    if self.session_id is not None:  # 初始化时session_id为None，浏览器打开后接下来session_id不为None</span><br><span class="line">        if not params:</span><br><span class="line">            params &#x3D; &#123;&#39;sessionId&#39;: self.session_id&#125;</span><br><span class="line">        elif &#39;sessionId&#39; not in params:</span><br><span class="line">            params[&#39;sessionId&#39;] &#x3D; self.session_id   # 最终将session_id加入到params中</span><br><span class="line"></span><br><span class="line">    params &#x3D; self._wrap_value(params)  # 一个递归函数（具体作用待看）</span><br><span class="line">    response &#x3D; self.command_executor.execute(driver_command, params)  # 调用ChromeRemoteConnection的execute函数</span><br><span class="line">    if response:</span><br><span class="line">        self.error_handler.check_response(response)</span><br><span class="line">        # 可以看到在_unwrap_value方法中会根据返回的响应去判断是open一个broswer</span><br><span class="line">        # 还是类似find element，如果是find element这种操作对应的响应会返回WebElement对象</span><br><span class="line">        response[&#39;value&#39;] &#x3D; self._unwrap_value(response.get(&#39;value&#39;, None))  </span><br><span class="line">        return response</span><br><span class="line">    # If the server doesn&#39;t send a response, assume the command was</span><br><span class="line">    # a success</span><br><span class="line">    return &#123;&#39;success&#39;: 0, &#39;value&#39;: None, &#39;sessionId&#39;: self.session_id&#125;</span><br></pre></td></tr></table></figure>
+<p>在execute方法中：</p>
+<ul>
+<li>首先判断session_id是不是None，因为我们还没有启动浏览器，所以这个session_id目前没有值</li>
+<li>然后使用_wrap_value方法对params进行包装（这是个递归函数），目前还不知道为什么要这样做</li>
+<li>接下来就是调用command_executor的execute方法进行浏览器打开的请求发送</li>
+</ul>
+<p>接下来就是直接与webdriver打交道的这个类了。接着上面，我们单步进入execute方法：</p>
+<pre><code># selenium.webdriver.chrome.remote_connection.ChromeRemoteConnection
+def execute(self, command, params):
+    &quot;&quot;&quot;
+    Send a command to the remote server.
+    &quot;&quot;&quot;
+    command_info = self._commands[command]  # 通过命令名称找到http请求实体
+    assert command_info is not None, &apos;Unrecognised command %s&apos; % command
+    path = string.Template(command_info[1]).substitute(params)
+    if hasattr(self, &apos;w3c&apos;) and self.w3c and isinstance(params, dict) and &apos;sessionId&apos; in params:
+        del params[&apos;sessionId&apos;]
+    data = utils.dump_json(params)  # 将数据转换成json格式字符串
+    url = &apos;%s%s&apos; % (self._url, path)  # http://127.0.0.1:54817/session
+    return self._request(command_info[0], url, body=data)  # 发送请求</code></pre><p>继续分析：</p>
+<ul>
+<li><p>首先通过command找到要发送的命令的结构</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">command</span><br><span class="line">Out[8]: &#39;newSession&#39;</span><br><span class="line">command_info</span><br><span class="line">Out[9]: (&#39;POST&#39;, &#39;&#x2F;session&#39;)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>这里我将变量的内容打印了出来。可以看到command是字符串newSession，从self._command中取出来的是一个tuple，内容是(‘POST’, ‘/session’)。表明此次请求是一个POST请求，请求url为/session</li>
+</ul>
+</li>
+<li><p>接着是</p>
+<pre><code>string.Template(command_info[1]).substitute(params)
+# 这句话是什么意思呢？看看下面这个例子。</code></pre>  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; from string import Template</span><br><span class="line">&gt;&gt;&gt; template_string &#x3D; &#39;$who likes $what&#39;</span><br><span class="line">&gt;&gt;&gt; s &#x3D; Template(template_string)</span><br><span class="line">&gt;&gt;&gt; d &#x3D; &#123;&#39;who&#39;: &#39;Tim&#39;, &#39;what&#39;: &#39;kung pao&#39;&#125;</span><br><span class="line">&gt;&gt;&gt; s.substitute(d)</span><br><span class="line">&#39;Tim likes kung pao&#39;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>然后将数据转换成json字符串</p>
+</li>
+<li><p>最后调用request方法发送请求(看下请求参数)</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">command_info[0]</span><br><span class="line">Out[16]: &#39;POST&#39;</span><br><span class="line">url</span><br><span class="line">Out[17]: &#39;http:&#x2F;&#x2F;127.0.0.1:54817&#x2F;session&#39;</span><br><span class="line">data</span><br><span class="line">Out[18]: &#39;&#123;&quot;capabilities&quot;: &#123;&quot;firstMatch&quot;: [&#123;&#125;], &quot;alwaysMatch&quot;: &#123;&quot;browserName&quot;: &quot;chrome&quot;, &quot;platformName&quot;: &quot;any&quot;, &quot;goog:chromeOptions&quot;: &#123;&quot;prefs&quot;: &#123;&quot;profile.default_content_settings.popups&quot;: 0, &quot;download.default_directory&quot;: &quot;&#x2F;Users&#x2F;vince&#x2F;Desktop&#x2F;ta&quot;&#125;, &quot;extensions&quot;: [], &quot;args&quot;: [&quot;--ignore-certificate-errors&quot;, &quot;--no-sandbox&quot;, &quot;--disable-gpu&quot;]&#125;&#125;&#125;, &quot;desiredCapabilities&quot;: &#123;&quot;browserName&quot;: &quot;chrome&quot;, &quot;version&quot;: &quot;&quot;, &quot;platform&quot;: &quot;ANY&quot;, &quot;goog:chromeOptions&quot;: &#123;&quot;prefs&quot;: &#123;&quot;profile.default_content_settings.popups&quot;: 0, &quot;download.default_directory&quot;: &quot;&#x2F;Users&#x2F;vince&#x2F;Desktop&#x2F;ta&quot;&#125;, &quot;extensions&quot;: [], &quot;args&quot;: [&quot;--ignore-certificate-errors&quot;, &quot;--no-sandbox&quot;, &quot;--disable-gpu&quot;]&#125;&#125;&#125;&#39;</span><br><span class="line">  </span><br><span class="line"># 到这里为止仍然还没有将这个请求发送出去。我们先不看_request方法中写了什么，分析一下当前的情况。</span><br><span class="line">chromedriver已经监听在了54817这个port上，然后我们也知道了请求方法，请求地址和请求参数。那我们能不能自己构造一个请求呢？</span><br><span class="line"></span><br><span class="line">url &#x3D; &#39;http:&#x2F;&#x2F;127.0.0.1:54817&#x2F;session&#39;</span><br><span class="line">data &#x3D; &#39;&#123;&quot;capabilities&quot;: &#123;&quot;firstMatch&quot;: [&#123;&#125;], &quot;alwaysMatch&quot;: &#123;&quot;browserName&quot;: &quot;chrome&quot;, &quot;platformName&quot;: &quot;any&quot;, &quot;goog:chromeOptions&quot;: &#123;&quot;prefs&quot;: &#123;&quot;profile.default_content_settings.popups&quot;: 0, &quot;download.default_directory&quot;: &quot;&#x2F;Users&#x2F;vince&#x2F;Desktop&#x2F;ta&quot;&#125;, &quot;extensions&quot;: [], &quot;args&quot;: [&quot;--ignore-certificate-errors&quot;, &quot;--no-sandbox&quot;, &quot;--disable-gpu&quot;]&#125;&#125;&#125;, &quot;desiredCapabilities&quot;: &#123;&quot;browserName&quot;: &quot;chrome&quot;, &quot;version&quot;: &quot;&quot;, &quot;platform&quot;: &quot;ANY&quot;, &quot;goog:chromeOptions&quot;: &#123;&quot;prefs&quot;: &#123;&quot;profile.default_content_settings.popups&quot;: 0, &quot;download.default_directory&quot;: &quot;&#x2F;Users&#x2F;vince&#x2F;Desktop&#x2F;ta&quot;&#125;, &quot;extensions&quot;: [], &quot;args&quot;: [&quot;--ignore-certificate-errors&quot;, &quot;--no-sandbox&quot;, &quot;--disable-gpu&quot;]&#125;&#125;&#125;&#39;</span><br><span class="line">resp &#x3D; requests.post(url, data&#x3D;data).content</span><br><span class="line"></span><br><span class="line"># 在Pychram的调试模式下输入上面的内容（当然你们的情况可能跟我不一样，端口不一样，请求参数也不同），就能看到chrome被打开了。</span><br></pre></td></tr></table></figure>
+
+
+</li>
+</ul>
+<p>接下来我们看看_request中的内容</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">def _request(self, method, url, body&#x3D;None):</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    Send an HTTP request to the remote server.</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    ...</span><br><span class="line">    parsed_url &#x3D; parse.urlparse(url)</span><br><span class="line">    headers &#x3D; self.get_remote_connection_headers(parsed_url, self.keep_alive)</span><br><span class="line">		...</span><br><span class="line">    if self.keep_alive:</span><br><span class="line">        resp &#x3D; self._conn.request(method, url, body&#x3D;body, headers&#x3D;headers)</span><br><span class="line">        statuscode &#x3D; resp.status</span><br><span class="line">    else:</span><br><span class="line">				...</span><br><span class="line">    data &#x3D; resp.data.decode(&#39;UTF-8&#39;)</span><br><span class="line">    try:</span><br><span class="line">    	  ...</span><br><span class="line">      	return data</span><br><span class="line">    finally:</span><br><span class="line">        LOGGER.debug(&quot;Finished Request&quot;)</span><br><span class="line">        resp.close()</span><br></pre></td></tr></table></figure>
+
+<p>在_request方法捡最重要的说一下：</p>
+<ul>
+<li><p>parse.urlparse(url) 解析url</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">url</span><br><span class="line">Out[30]: &#39;http:&#x2F;&#x2F;127.0.0.1:54817&#x2F;session&#39;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>get_remote_connection_headers(parsed_url, self.keep_alive) 构造请求头</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">headers</span><br><span class="line">Out[31]: </span><br><span class="line">&#123;&#39;Accept&#39;: &#39;application&#x2F;json&#39;,</span><br><span class="line">&#39;Content-Type&#39;: &#39;application&#x2F;json;charset&#x3D;UTF-8&#39;,</span><br><span class="line">&#39;User-Agent&#39;: &#39;selenium&#x2F;3.141.0 (python mac)&#39;,</span><br><span class="line">&#39;Connection&#39;: &#39;keep-alive&#39;&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>self._conn.request(method, url, body=body, headers=headers) 发送请求请返回response</p>
+</li>
+</ul>
+<p>到这里为止chrome的启动流程就分析完了，中间省略了一下地方，response返回之后也省略了一些。但是并不影响整个启动流程的讲解。接下来可能会分析下selenium中其他模块，比如很重要的common模块里面就包含了很多在UI自动化时需要用到的东西。</p>
+<p>最后放一张自己画的selenium的启动架构简图：<br><img src="https://s1.ax1x.com/2020/06/13/tvPGmn.jpg" alt="tvPGmn.jpg"></p>
+
+    </article>
+    <!-- license  -->
+    
+        <div class="license-wrapper"> <!-- <a href="http://mrfranken.github.io -->
+            <!-- <p>原文作者：<a href=/>Vince Wen</a> -->
+            <p>原文作者：Vince Wen</a>
+            <!-- <p>原文链接：<a href="http://mrfranken.github.io/2020/05/01/%E6%89%8B%E6%8A%8A%E6%89%8B%E5%88%86%E6%9E%90selenium%E5%90%AF%E5%8A%A8%E6%B5%81%E7%A8%8B/">http://mrfranken.github.io/2020/05/01/%E6%89%8B%E6%8A%8A%E6%89%8B%E5%88%86%E6%9E%90selenium%E5%90%AF%E5%8A%A8%E6%B5%81%E7%A8%8B/</a> -->
+            <!-- <p>发表日期：<a href="http://mrfranken.github.io/2020/05/01/%E6%89%8B%E6%8A%8A%E6%89%8B%E5%88%86%E6%9E%90selenium%E5%90%AF%E5%8A%A8%E6%B5%81%E7%A8%8B/">May 1st 2020, 12:00:00 am</a> -->
+            <p>发表日期：May 1st 2020, 12:00:00 am</a>
+            <!-- <p>更新日期：<a href="http://mrfranken.github.io/2020/05/01/%E6%89%8B%E6%8A%8A%E6%89%8B%E5%88%86%E6%9E%90selenium%E5%90%AF%E5%8A%A8%E6%B5%81%E7%A8%8B/">June 17th 2020, 11:18:21 am</a> -->
+            <p>版权声明：本文采用<a rel="license noopener" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可</p>
+        </div>
+    
+    <!-- paginator  -->
+    <ul class="post-paginator">
+        <li class="next">
+            
+                <div class="nextSlogan">Next Post</div>
+                <a href= "/2020/05/15/flask%E7%9F%A5%E8%AF%86%E7%82%B9/" title= "flask知识点">
+                    <div class="nextTitle">flask知识点</div>
+                </a>
+            
+        </li>
+        <li class="previous">
+            
+                <div class="prevSlogan">Previous Post</div>
+                <a href= "/2020/02/10/pip%E4%B8%8Econda%E7%9A%84%E4%BD%BF%E7%94%A8/" title= "pip与conda的使用">
+                    <div class="prevTitle">pip与conda的使用</div>
+                </a>
+            
+        </li>
+    </ul>
+    <!-- 评论插件 -->
+    <!-- 来必力City版安装代码 -->
+
+<!-- City版安装代码已完成 -->
+    
+    
+    <!-- partial('_partial/comment/changyan') -->
+    <!--PC版-->
+
+
+    
+    
+
+    <!-- 评论 -->
+</main>
+            <!-- profile -->
+            
+        </div>
+        <footer class="footer footer-unloaded">
+    <!-- social  -->
+    
+    <div class="social">
+        
+    
+        
+            
+                <a href="mailto:wsj973507837@163.com" class="iconfont-archer email" title=email ></a>
+            
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+    </div>
+    
+    <!-- powered by Hexo  -->
+    <div class="copyright">
+        <span id="hexo-power">Powered by <a href="https://hexo.io/" target="_blank">Hexo</a></span><span class="iconfont-archer power">&#xe635;</span><span id="theme-info">theme <a href="https://github.com/fi3ework/hexo-theme-archer" target="_blank">Archer</a></span>
+    </div>
+    <!-- 不蒜子  -->
+    
+    <div class="busuanzi-container">
+    
+     
+    <span id="busuanzi_container_site_pv">PV: <span id="busuanzi_value_site_pv"></span> :)</span>
+    
+    </div>
+    
+</footer>
+    </div>
+    <!-- toc -->
+    
+    <div class="toc-wrapper" style=
+    
+
+
+
+
+
+
+
+top:60vh;
+
+    >
+        <div class="toc-catalog">
+            <span class="iconfont-archer catalog-icon">&#xe613;</span><span>CATALOG</span>
+        </div>
+        
+    </div>
+    
+    <div class="back-top iconfont-archer">&#xe639;</div>
+    <div class="sidebar sidebar-hide">
+    <ul class="sidebar-tabs sidebar-tabs-active-0">
+        <li class="sidebar-tab-archives"><span class="iconfont-archer">&#xe67d;</span><span class="tab-name">归档</span></li>
+        <li class="sidebar-tab-tags"><span class="iconfont-archer">&#xe61b;</span><span class="tab-name">标签</span></li>
+        <li class="sidebar-tab-categories"><span class="iconfont-archer">&#xe666;</span><span class="tab-name">分类</span></li>
+    </ul>
+    <div class="sidebar-content sidebar-content-show-archive">
+          <div class="sidebar-panel-archives">
+    <!-- 在ejs中将archive按照时间排序 -->
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <div class="total-and-search">
+        <div class="total-archive">
+        总数 : 12
+        </div>
+        <!-- search  -->
+        
+    </div>
+    
+    <div class="post-archive">
+    
+    
+    
+    
+    <div class="archive-year"> 2020 </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">05/15</span><a class="archive-post-title" href= "/2020/05/15/flask%E7%9F%A5%E8%AF%86%E7%82%B9/" >flask知识点</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">05/01</span><a class="archive-post-title" href= "/2020/05/01/%E6%89%8B%E6%8A%8A%E6%89%8B%E5%88%86%E6%9E%90selenium%E5%90%AF%E5%8A%A8%E6%B5%81%E7%A8%8B/" >手把手分析selenium启动流程</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">02/10</span><a class="archive-post-title" href= "/2020/02/10/pip%E4%B8%8Econda%E7%9A%84%E4%BD%BF%E7%94%A8/" >pip与conda的使用</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">02/09</span><a class="archive-post-title" href= "/2020/02/09/chromedriver/" >如何在python中手动启动chromederiver</a>
+        </li>
+    
+    
+    
+    
+    
+        </ul>
+    
+    <div class="archive-year"> 2019 </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/08</span><a class="archive-post-title" href= "/2019/12/08/%E5%A6%82%E4%BD%95%E7%94%A8Docker%E5%AE%89%E8%A3%85Gitlab%20Runner/" >如何用Docker安装Gitlab Runner</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/08</span><a class="archive-post-title" href= "/2019/11/08/%E5%A6%82%E4%BD%95%E5%9C%A8gitlab%E4%B8%8A%E5%BC%80%E5%90%AF%E9%82%AE%E4%BB%B6%E5%8A%9F%E8%83%BD/" >如何在Gitlab上开启邮件功能</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">10/08</span><a class="archive-post-title" href= "/2019/10/08/Gitlab%E7%9A%84%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BC%98%E5%8C%96/" >Gitlab的安装与优化</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">05/10</span><a class="archive-post-title" href= "/2019/05/10/Jemter%E9%9D%9EGUI%E5%88%86%E5%B8%83%E5%BC%8F%E5%8E%8B%E6%B5%8B/" >Jemter非GUI分布式压测</a>
+        </li>
+    
+    
+    
+    
+    
+        </ul>
+    
+    <div class="archive-year"> 2018 </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">04/19</span><a class="archive-post-title" href= "/2018/04/19/HTTP%E7%B3%BB%E5%88%97-HTTP%E5%8D%8F%E8%AE%AE%E7%9A%84%E4%B8%80%E4%BA%9B%E7%89%B9%E6%80%A7%EF%BC%88%E4%BA%8C%EF%BC%89/" >HTTP系列 - HTTP协议的一些特性（二）</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">04/16</span><a class="archive-post-title" href= "/2018/04/16/HTTP%E7%B3%BB%E5%88%97-HTTP%E5%8D%8F%E8%AE%AE%E7%9A%84%E4%B8%80%E4%BA%9B%E7%89%B9%E6%80%A7%EF%BC%88%E4%B8%80%EF%BC%89/" >HTTP系列 - HTTP协议的一些特性（一）</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">04/13</span><a class="archive-post-title" href= "/2018/04/13/HTTP%E7%B3%BB%E5%88%97-HTTP%E5%8D%8F%E8%AE%AE%E7%BB%93%E6%9E%84%E5%92%8C%E9%80%9A%E8%AE%AF%E5%8E%9F%E7%90%86/" >HTTP系列 - HTTP协议结构和通讯原理</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">04/11</span><a class="archive-post-title" href= "/2018/04/11/HTTP%E7%B3%BB%E5%88%97-%E9%80%8F%E8%BF%87TCP-IP%E7%9C%8BHTTP/" >HTTP系列 - 透过TCP/IP看HTTP</a>
+        </li>
+    
+    </div>
+  </div>
+        <div class="sidebar-panel-tags">
+    <div class="sidebar-tags-name">
+    
+        <span class="sidebar-tag-name" data-tags="HTTP"><span class="iconfont-archer">&#xe606;</span>HTTP</span>
+    
+        <span class="sidebar-tag-name" data-tags="DevOps"><span class="iconfont-archer">&#xe606;</span>DevOps</span>
+    
+        <span class="sidebar-tag-name" data-tags="Gitlab"><span class="iconfont-archer">&#xe606;</span>Gitlab</span>
+    
+        <span class="sidebar-tag-name" data-tags="Jmeter"><span class="iconfont-archer">&#xe606;</span>Jmeter</span>
+    
+        <span class="sidebar-tag-name" data-tags="性能测试"><span class="iconfont-archer">&#xe606;</span>性能测试</span>
+    
+        <span class="sidebar-tag-name" data-tags="测试"><span class="iconfont-archer">&#xe606;</span>测试</span>
+    
+        <span class="sidebar-tag-name" data-tags="selenium"><span class="iconfont-archer">&#xe606;</span>selenium</span>
+    
+        <span class="sidebar-tag-name" data-tags="web"><span class="iconfont-archer">&#xe606;</span>web</span>
+    
+        <span class="sidebar-tag-name" data-tags="python"><span class="iconfont-archer">&#xe606;</span>python</span>
+    
+        <span class="sidebar-tag-name" data-tags="flask"><span class="iconfont-archer">&#xe606;</span>flask</span>
+    
+    </div>
+    <div class="iconfont-archer sidebar-tags-empty">&#xe678;</div>
+    <div class="tag-load-fail" style="display: none; color: #ccc; font-size: 0.6rem;">
+    缺失模块。<br/>
+    1、请确保node版本大于6.2<br/>
+    2、在博客根目录（注意不是archer根目录）执行以下命令：<br/>
+    <span style="color: #f75357; font-size: 1rem; line-height: 2rem;">npm i hexo-generator-json-content --save</span><br/>
+    3、在根目录_config.yml里添加配置：
+    <pre style="color: #787878; font-size: 0.6rem;">
+jsonContent:
+  meta: false
+  pages: false
+  posts:
+    title: true
+    date: true
+    path: true
+    text: false
+    raw: false
+    content: false
+    slug: false
+    updated: false
+    comments: false
+    link: false
+    permalink: false
+    excerpt: false
+    categories: true
+    tags: true</pre>
+    </div> 
+    <div class="sidebar-tags-list"></div>
+</div>
+        <div class="sidebar-panel-categories">
+    <div class="sidebar-categories-name">
+    
+        <span class="sidebar-category-name" data-categories="计算机网络"><span class="iconfont-archer">&#xe60a;</span>计算机网络</span>
+    
+        <span class="sidebar-category-name" data-categories="DevOps"><span class="iconfont-archer">&#xe60a;</span>DevOps</span>
+    
+        <span class="sidebar-category-name" data-categories="性能测试"><span class="iconfont-archer">&#xe60a;</span>性能测试</span>
+    
+        <span class="sidebar-category-name" data-categories="测试"><span class="iconfont-archer">&#xe60a;</span>测试</span>
+    
+        <span class="sidebar-category-name" data-categories="web"><span class="iconfont-archer">&#xe60a;</span>web</span>
+    
+        <span class="sidebar-category-name" data-categories="python"><span class="iconfont-archer">&#xe60a;</span>python</span>
+    
+        <span class="sidebar-category-name" data-categories="web测试"><span class="iconfont-archer">&#xe60a;</span>web测试</span>
+    
+        <span class="sidebar-category-name" data-categories="性能测试/Jmeter"><span class="iconfont-archer">&#xe60a;</span>性能测试/Jmeter</span>
+    
+        <span class="sidebar-category-name" data-categories="web/python"><span class="iconfont-archer">&#xe60a;</span>web/python</span>
+    
+    </div>
+    <div class="iconfont-archer sidebar-categories-empty">&#xe678;</div>
+    <div class="sidebar-categories-list"></div>
+</div>
+    </div>
+</div> 
+    <script>
+    var siteMeta = {
+        root: "/",
+        author: "Vince Wen"
+    }
+</script>
+    <!-- CDN failover -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+    <script type="text/javascript">
+        if (typeof window.$ === 'undefined')
+        {
+            console.warn('jquery load from jsdelivr failed, will load local script')
+            document.write('<script src="/lib/jquery.min.js">\x3C/script>')
+        }
+    </script>
+    <script src="/scripts/main.js"></script>
+    <!-- algolia -->
+    
+    <!-- busuanzi  -->
+    
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    
+    <!-- CNZZ  -->
+    
+    </div>
+    <!-- async load share.js -->
+    
+        <script src="/scripts/share.js" async></script>    
+     
+    </body>
+</html>
+
+
